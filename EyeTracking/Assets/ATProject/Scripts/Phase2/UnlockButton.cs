@@ -1,8 +1,9 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UnluckButton : MonoBehaviour, IGazeTarget
+public class UnlockButton : MonoBehaviour, IGazeTarget
 {
     [Header("Pin Movement")]
     [SerializeField] private GameObject unlockPin;
@@ -14,6 +15,8 @@ public class UnluckButton : MonoBehaviour, IGazeTarget
 
     private bool isBeingLookedAt = false;
     private Button _Button;
+    public UnityEvent IsUpEvent;
+    public UnityEvent IsDownEvent;
     
     
     void Start()
@@ -49,6 +52,8 @@ public class UnluckButton : MonoBehaviour, IGazeTarget
     {
         isBeingLookedAt = true;
         _Button.Select();
+        IsUpEvent.Invoke();
+
         
     }
 
@@ -56,5 +61,7 @@ public class UnluckButton : MonoBehaviour, IGazeTarget
     {
         isBeingLookedAt = false;
         EventSystem.current.SetSelectedGameObject(null);
+        IsDownEvent.Invoke();
+
     }
 }

@@ -1,92 +1,61 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class UnlockController : MonoBehaviour
 {
-   [SerializeField] private GameObject _pin1;
-   [SerializeField] private GameObject _pin2;
-   [SerializeField] private GameObject _pin3;
-   [SerializeField] private GameObject _pin4;
-   [SerializeField] private GameObject _pin5;
-   
-   private RectTransform _rectTransformPin1;
-   private Vector3 _pin1Position;
-   
-   private RectTransform _rectTransformPin2; 
-   private Vector3 _pin2Position;
+    [Header("Timer Event Checks")]
+    public GameObject _timer1;
+    public GameObject _timer2;
+    public GameObject _timer3;
+    public GameObject _timer4;
+    public GameObject _timer5;
+    public UnityEvent timer1Event;
+    public UnityEvent timer2Event;
+    public UnityEvent timer3Event;
+    public UnityEvent timer4Event;
+    public UnityEvent timer5Event;
 
-   private RectTransform _rectTransformPin3;
-   private Vector3 _pin3Position;
+    [Header("Timer Reset Event")] 
+    private UnlockSlider _slider1;
+    private UnlockSlider _slider2;
+    private UnlockSlider _slider3;
+    private UnlockSlider _slider4;
+    private UnlockSlider _slider5;
+    
 
-   private RectTransform _rectTransformPin4;
-   private Vector3 _pin4Position;
-
-   private RectTransform _rectTransformPin5;
-   private Vector3 _pin5Position;
-
-
-   private float _timer = 0f;
-   public UnlockSlider _slider;
 
    private void Start()
    {
-      _rectTransformPin1 = _pin1.GetComponent<RectTransform>();
-      _rectTransformPin2 = _pin2.GetComponent<RectTransform>();
-      _rectTransformPin3 = _pin3.GetComponent<RectTransform>();
-      _rectTransformPin4 = _pin4.GetComponent<RectTransform>();
-      _rectTransformPin5 = _pin5.GetComponent<RectTransform>();
+      timer1Event = _timer1.GetComponent<UnlockSlider>().SliderResetEvent;
+      timer2Event = _timer2.GetComponent<UnlockSlider>().SliderResetEvent;
+      timer3Event = _timer3.GetComponent<UnlockSlider>().SliderResetEvent;
+      timer4Event = _timer4.GetComponent<UnlockSlider>().SliderResetEvent;
+      timer5Event = _timer5.GetComponent<UnlockSlider>().SliderResetEvent;
       
-      _pin1Position = _rectTransformPin1.position;
-      _pin2Position = _rectTransformPin2.position;
-      _pin3Position = _rectTransformPin3.position;
-      _pin4Position = _rectTransformPin4.position;
-      _pin5Position = _rectTransformPin5.position;
+      timer1Event.AddListener(Reset);
+      timer2Event.AddListener(Reset);
+      timer3Event.AddListener(Reset);
+      timer4Event.AddListener(Reset);
+      timer5Event.AddListener(Reset);
+
    }
 
-   private void Update()
+   public void Reset()
    {
-      _timer += Time.deltaTime;
+       _slider1 = _timer1.GetComponent<UnlockSlider>();
+       _slider2 = _timer2.GetComponent<UnlockSlider>();
+       _slider3 = _timer3.GetComponent<UnlockSlider>();
+       _slider4 = _timer4.GetComponent<UnlockSlider>();
+       _slider5 = _timer5.GetComponent<UnlockSlider>();
 
-      if (_timer > 0 && _timer <= 5)
-      {
-         if (_pin1Position != _pin1.GetComponent<RectTransform>().position)
-         {
-            _slider.Reset();
-            _timer = 0f;
-         }
-      }
-      else if (_timer > 5 && _timer <= 10)
-      {
-         if (_pin2Position != _pin2.GetComponent<RectTransform>().position)
-         {
-            _slider.Reset();
-            _timer = 0f;
-         }
-      }
-      else if (_timer > 10 && _timer <= 15)
-      {
-         if (_pin3Position != _pin3.GetComponent<RectTransform>().position)
-         {
-            _slider.Reset();
-            _timer = 0f;
-         }
-      }
-      else if (_timer > 15 && _timer <= 20)
-      {
-         if (_pin4Position != _pin4.GetComponent<RectTransform>().position)
-         {
-            _slider.Reset();
-            _timer = 0f;
-         }
-      }
-      else if (_timer > 20 && _timer <= 25)
-      {
-         if (_pin5Position != _pin5.GetComponent<RectTransform>().position)
-         {
-            _slider.Reset();
-            _timer = 0f;
-         }
-      }
+       _slider1.SliderReset();
+       _slider2.SliderReset();
+       _slider3.SliderReset();
+       _slider4.SliderReset();
+       _slider5.SliderReset();
+
    }
 }
