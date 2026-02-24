@@ -15,10 +15,10 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         // when the rest of the game is added, set these all to false by default and true when needed
-        pinCheckPhaseCanvas.SetActive(false);
-        pinCheckActive = false;
-        unlockPhaseCanvas.SetActive(true);
-        unlockActive = true;
+        pinCheckPhaseCanvas.SetActive(true);
+        pinCheckActive = true;
+        unlockPhaseCanvas.SetActive(false);
+        unlockActive = false;
         openPhaseCanvas.SetActive(false);
         openActive = false;
 
