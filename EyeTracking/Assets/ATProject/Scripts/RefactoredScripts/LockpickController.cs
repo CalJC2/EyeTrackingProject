@@ -10,6 +10,8 @@ using UnityEngine.UI;
 
 public class LockpickController : BeamEyeTrackerMonoBehaviour
 {
+    public static Vector2 CurrentGazeScreenPosition {get; private set;}
+    
     private IGazeTarget _targetPin;
     private PointerEventData _eventData;
     private EventSystem _eventSystem;
@@ -32,6 +34,8 @@ public class LockpickController : BeamEyeTrackerMonoBehaviour
        _GazePos = betInputDevice.viewportGazePosition.ReadValue();
        // convert viewport to Screen pixels for UI support
        _screenPos = new Vector2(_GazePos.x * Screen.width, _GazePos.y * Screen.height);
+       //added for Phase 3
+       CurrentGazeScreenPosition = _screenPos;
        // set pointer to gaze position
        _eventData.position = _screenPos;
        
