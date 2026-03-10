@@ -1,5 +1,10 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Collections;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 //Holds data phase 1 makes and phase 2 needs
 [System.Serializable]
@@ -20,6 +25,10 @@ public class LockPickManager : MonoBehaviour
     [Header("Game State")] 
     public Phase currentPhase = Phase.None;
     public PinData[] lockPins = new PinData[5];
+
+    [Header("Player Control Events")] 
+    public UnityEvent OnMiniGameStart;
+    public UnityEvent OnMiniGameEnd;
     
     [Header("Phase 1 References")]
     public GameObject Phase1Canvas;
@@ -36,17 +45,37 @@ public class LockPickManager : MonoBehaviour
     public GameObject Phase3Canvas;
     public Phase3Rotator Phase3Rotator;
 
+    private DoorController targetDoor;
+    private Slider Continue1Slider;
+    private Slider Continue2Slider;
+    private int[] phase2AssignedNumbers;
+
     private void Awake()
     {
+        // set up singleton
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+ 
     }
 
     private void Start()
     {
-        // for testing, will be called when a player walks up to a door
-        StartPhase(Phase.Phase3);
+        Continue1Slider = phase1ContinueButton.GetComponent<Slider>();
+        Continue2Slider = phase2ContinueButton.GetComponent<Slider>();
+        StartPhase(Phase.None);
         
+    }
+
+    public void StartMiniGame(DoorController doorToUnlock)
+    {
+        targetDoor = doorToUnlock;
+        
+        //disable player controls
+        if(OnMiniGameStart != null) OnMiniGameStart.Invoke();
+        phase2AssignedNumbers = null;
+        
+        StartPhase(Phase.Phase1);
+
     }
 
     public void StartPhase(Phase newPhase)
@@ -58,10 +87,14 @@ public class LockPickManager : MonoBehaviour
         Phase3Canvas.SetActive(false);
         phase1ContinueButton.SetActive(false);
         phase2ContinueButton.SetActive(false);
+        Continue1Slider.value = 0f;
+        Continue2Slider.value = 0f;
 
         //switch based on which phase the player will be in
         switch (currentPhase)
         {
+            case Phase.None:
+                break;
             case Phase.Phase1:
                 Phase1Canvas.SetActive(true);
                 InitialisePhase1RandomDate();
@@ -83,6 +116,7 @@ public class LockPickManager : MonoBehaviour
 
     private void InitialisePhase1RandomDate()
     {
+        // minimum and max height each pin could move to
         float minHeight = 10f;
         float maxHeight = 200f;
         
@@ -96,10 +130,12 @@ public class LockPickManager : MonoBehaviour
             availableNumbers[rnd] = temp;
         }
         
+        
         //assign the numbers from above for loop 
         for(int i = 0; i < lockPins.Length; i++)
         {
             int uniqueNumber = availableNumbers[i];
+            // sets the assigned numbers for phase 2
             //makes a percentage based off the unique number and then calculates height off that percentage
             float heightPercentage = (uniqueNumber - 1f )/ 4f;
             float calculatedHeight = Mathf.Lerp(minHeight, maxHeight, heightPercentage);
@@ -116,7 +152,7 @@ public class LockPickManager : MonoBehaviour
             Debug.Log($"Data Generated -> Logic Slot {i} holds Number {uniqueNumber} at Height {calculatedHeight:F1}");
         }
 
-        // 
+        // shuffle the indices used to set each pin
         int[] indices = { 0, 1, 2, 3, 4 };
         for (int i = indices.Length - 1; i >= 0; i--)
         {
@@ -125,7 +161,18 @@ public class LockPickManager : MonoBehaviour
             indices[i] = indices[randomIndex];
             indices[randomIndex] = temp;
         }
+        
+        // assigning the numbers in the current order ready for phase 2
+        phase2AssignedNumbers = new int[5];
+        for (int i = 0; i < phase2AssignedNumbers.Length; i++)
+        {
+            phase2AssignedNumbers[i] = indices[i];
+        }
+        
+        //flips the results 
+        Array.Reverse(phase2AssignedNumbers);
 
+        // set each pin within phase 1
         for (int i = 0; i < phase1Pins.Length; i++)
         {
             if (phase1Pins[i] != null)
@@ -141,6 +188,7 @@ public class LockPickManager : MonoBehaviour
 
     public void ReportPinSet(int pinIndex)
     {
+        // called everytime a pin is set
         lockPins[pinIndex].isSet = true;
         CheckPhase1Complete();
 
@@ -148,6 +196,7 @@ public class LockPickManager : MonoBehaviour
 
     public void CheckPhase1Complete()
     {
+        // checks each pin to see if they are all in the set position
         foreach (PinData pin in lockPins)
         {
             if (!pin.isSet) return;
@@ -159,25 +208,25 @@ public class LockPickManager : MonoBehaviour
 
     private void InitialisePhase2Data()
     {
-        int[] numbersToAssign = new int[5];
+        //int[] numbersToAssign = new int[5];
         for (int i = 0; i < 5; i++)
         {
-            numbersToAssign[i] = lockPins[i].assignedNumber;
+            phase2AssignedNumbers[i] = lockPins[i].assignedNumber;
         }
 
-        for (int i = numbersToAssign.Length - 1; i >= 0; i--)
+        for (int i = phase2AssignedNumbers.Length - 1; i >= 0; i--)
         {
             int randomIndex = Random.Range(0, i + 1);
-            int temp = numbersToAssign[i];
-            numbersToAssign[i] = numbersToAssign[randomIndex];
-            numbersToAssign[randomIndex] = temp;
+            int temp = phase2AssignedNumbers[i];
+            phase2AssignedNumbers[i] = phase2AssignedNumbers[randomIndex];
+            phase2AssignedNumbers[randomIndex] = temp;
         }
         
         for(int i = 0; i < phase2Buttons.Length; i++)
         {
             if (phase2Buttons[i] != null)
             {
-                phase2Buttons[i].SetUpButton(numbersToAssign[i]);
+                phase2Buttons[i].SetUpButton(phase2AssignedNumbers[i]);
             }
         }
 
@@ -203,10 +252,19 @@ public class LockPickManager : MonoBehaviour
     public void TriggerPhase2()
     {
         StartPhase(Phase.Phase2);
+ 
     }
 
     public void CompleteGame()
     {
         StartPhase(Phase.Complete);
+
+        if (targetDoor != null)
+        {
+            targetDoor.UnlockAndOpenDoor();
+            targetDoor = null;
+        }
+
+        if (OnMiniGameEnd != null) OnMiniGameEnd.Invoke();
     }
 }

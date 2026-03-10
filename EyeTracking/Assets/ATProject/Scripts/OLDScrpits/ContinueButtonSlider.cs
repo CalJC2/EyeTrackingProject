@@ -52,6 +52,8 @@ public class ContinueButtonSlider : MonoBehaviour, IGazeTarget
         hasTriggered = true;
         _slider.value = 1f;
         onFillComplete.Invoke();
+        _slider.value = 0f;
+        hasTriggered = false;
     }
 
     public void LookAt()

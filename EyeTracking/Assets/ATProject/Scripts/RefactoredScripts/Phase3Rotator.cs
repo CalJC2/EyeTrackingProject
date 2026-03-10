@@ -5,6 +5,7 @@ public class Phase3Rotator : MonoBehaviour, IGazeTarget
     [Header("UI References")] 
     public RectTransform keyPivot; // the center point the key rotates around
     public GameObject endTargetGraphic; // the visual target around the key
+    public Camera camera;
 
     [Header("Settings")] 
     public float targetUnlockingAngle = -90f; // a quarter-turn to the right
@@ -20,6 +21,9 @@ public class Phase3Rotator : MonoBehaviour, IGazeTarget
         isUnlocked = false;
         // hide the end target on init
         if(endTargetGraphic != null) endTargetGraphic.SetActive(false);
+        
+        if(keyPivot != null) keyPivot.rotation = Quaternion.Euler(0f, 0f, 0f);
+        
     }
     
     public void LookAt()
@@ -28,7 +32,6 @@ public class Phase3Rotator : MonoBehaviour, IGazeTarget
 
         if (!isGrabbed)
         {
-            Debug.Log("LookAt");
             isGrabbed = true;
             if(endTargetGraphic != null) endTargetGraphic.SetActive(true);
         }
@@ -44,13 +47,12 @@ public class Phase3Rotator : MonoBehaviour, IGazeTarget
     {
         if (!isGrabbed || isUnlocked) return;
         
-        Vector2 pivotScreenPos = RectTransformUtility.WorldToScreenPoint(null, keyPivot.position);
+        Vector2 pivotScreenPos = RectTransformUtility.WorldToScreenPoint(camera, keyPivot.position);
         Vector2 gazePos = LockpickController.CurrentGazeScreenPosition;
         
         Vector2 direction = gazePos - pivotScreenPos;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         
-        Debug.Log($"Gaze Pos: {gazePos} | Calculated Angle: {angle}");
         
         keyPivot.rotation = Quaternion.Euler(0f, 0f, angle + rotationOffset);
         
