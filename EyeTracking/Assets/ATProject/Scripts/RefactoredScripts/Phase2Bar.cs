@@ -1,6 +1,7 @@
 using System;
 using System.Timers;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [System.Serializable]
@@ -24,24 +25,37 @@ public class Phase2Bar : MonoBehaviour
     public float pinRaisedHeight = 50f;
     public float pinMoveSpeed = 300f;
     
-    [Header("Obstacles")]
-    public ObstaclePin[] obstacles = new ObstaclePin[5];
+    [FormerlySerializedAs("obstacles")] [Header("Obstacles")]
+    public ObstaclePin[] obstaclePins = new ObstaclePin[5];
 
     private int currentGazedNumber = -1;
     private bool isRunning = false;
     private float[] originalPinHeights = new float[5];
+    private int targetNumber;
 
-    public void InitialisePhase2()
+    private void Start()
     {
-        for (int i = 0; i < obstacles.Length; i++)
+        for (int i = 0; i < obstaclePins.Length; i++)
         {
-            if (obstacles[i].pinGraphic != null)
+            if (obstaclePins[i] != null && obstaclePins[i].pinGraphic != null)
             {
-                originalPinHeights[i] = obstacles[i].pinGraphic.anchoredPosition.y;
+                originalPinHeights[i] = obstaclePins[i].pinGraphic.anchoredPosition.y;
             }
+        }
+    }
 
-            obstacles[i].requiredNumber = LockPickManager.Instance.lockPins[i].assignedNumber;
-            obstacles[i].isPassed = false;
+    public void InitialisePhase2(int[] targetSequence)
+    {
+        for (int i = 0; i < obstaclePins.Length; i++)
+        {
+            if (obstaclePins[i] != null)
+            {
+                SetUpObstacle(i,targetSequence[i]);
+            }
+            
+
+            //obstaclePins[i].requiredNumber = LockPickManager.Instance.lockPins[i].assignedNumber;
+            obstaclePins[i].isPassed = false;
         }
         
         ResetBar();
@@ -67,9 +81,9 @@ public class Phase2Bar : MonoBehaviour
         
         fillBar.fillAmount += fillSpeed * Time.deltaTime;
 
-        for (int i = 0; i < obstacles.Length; i++)
+        for (int i = 0; i < obstaclePins.Length; i++)
         {
-            ObstaclePin pin = obstacles[i];
+            ObstaclePin pin = obstaclePins[i];
 
             float targetY = (currentGazedNumber == pin.requiredNumber || pin.isPassed)
                 ? originalPinHeights[i] + pinRaisedHeight
@@ -106,9 +120,25 @@ public class Phase2Bar : MonoBehaviour
     private void ResetBar()
     {
         fillBar.fillAmount = 0f;
-        foreach (var pin in obstacles)
+        for (int i = 0; i < obstaclePins.Length; i++)
+        {
+            obstaclePins[i].isPassed = false;
+
+            if (obstaclePins[i].pinGraphic != null)
+            {
+                Vector2 currentPos = obstaclePins[i].pinGraphic.anchoredPosition;
+                obstaclePins[i].pinGraphic.anchoredPosition = new Vector2(currentPos.x, originalPinHeights[i]);
+            }
+        }
+        
+        foreach (var pin in obstaclePins)
         {
             pin.isPassed = false;
         }
+    }
+
+    public void SetUpObstacle(int pinIndex, int _targetNumber)
+    {
+        obstaclePins[pinIndex].requiredNumber = _targetNumber;
     }
 }

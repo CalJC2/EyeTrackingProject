@@ -1054,7 +1054,7 @@ MonoBehaviour:
   fillSpeed: 0.05
   pinRaisedHeight: 50
   pinMoveSpeed: 300
-  obstacles:
+  obstaclePins:
   - fillThreshold: 0.255
     pinGraphic: {fileID: 35481909}
     requiredNumber: 0
@@ -1258,6 +1258,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   StartingYPosition: -150
+  StartingXPosition: 0
+  targetRangeTolerance: 25
+  shakeIntensity: 3
   pinGraphic: {fileID: 539301917}
   numberText: {fileID: 1399658291}
 --- !u!1 &557257969
@@ -1997,6 +2000,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   StartingYPosition: -150
+  StartingXPosition: 0
+  targetRangeTolerance: 25
+  shakeIntensity: 3
   pinGraphic: {fileID: 695374474}
   numberText: {fileID: 1436322327}
 --- !u!1 &704039065
@@ -2287,6 +2293,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   StartingYPosition: -150
+  StartingXPosition: 0
+  targetRangeTolerance: 25
+  shakeIntensity: 3
   pinGraphic: {fileID: 721647471}
   numberText: {fileID: 735324423}
 --- !u!1 &722115649
@@ -2822,6 +2831,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   StartingYPosition: -150
+  StartingXPosition: 0
+  targetRangeTolerance: 25
+  shakeIntensity: 3
   pinGraphic: {fileID: 769636191}
   numberText: {fileID: 1969162233}
 --- !u!1 &830078119
@@ -3966,6 +3978,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   StartingYPosition: -150
+  StartingXPosition: 0
+  targetRangeTolerance: 25
+  shakeIntensity: 3
   pinGraphic: {fileID: 1068332899}
   numberText: {fileID: 891467835}
 --- !u!1 &1075760495
