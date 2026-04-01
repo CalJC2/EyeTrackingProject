@@ -101,9 +101,12 @@ public class Phase2Bar : MonoBehaviour
                 if (currentGazedNumber == pin.requiredNumber)
                 {
                     pin.isPassed = true;
+                    LockPickManager.Instance.PlayPinMoveSound();
+                    LockPickManager.Instance.PlayBarPassSound();
                 }
                 else
                 {
+                    LockPickManager.Instance.PlayBarFailSound();
                     ResetBar();
                     break;
                 }

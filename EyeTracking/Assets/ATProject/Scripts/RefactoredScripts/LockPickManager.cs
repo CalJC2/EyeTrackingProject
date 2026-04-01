@@ -45,6 +45,15 @@ public class LockPickManager : MonoBehaviour
     [Header("Phase 3 References")]
     public GameObject Phase3Canvas;
     public Phase3Rotator Phase3Rotator;
+    
+    [Header("Audio References")]
+    public AudioSource audioSource;
+    public AudioClip[] pinSetSounds;
+    public AudioClip pinMoveSound;
+    public AudioClip barPassSound;
+    public AudioClip barFailSound;
+    public AudioClip doorUnlockSound;
+    public AudioSource loopingAudioSource;
 
     private DoorController targetDoor;
     private Slider Continue1Slider;
@@ -183,6 +192,7 @@ public class LockPickManager : MonoBehaviour
     {
         // called everytime a pin is set
         lockPins[pinIndex].isSet = true;
+        PlayRandomPinSetSound();
         CheckPhase1Complete();
 
     }
@@ -278,4 +288,47 @@ public class LockPickManager : MonoBehaviour
     {
         return lockPins[index];
     }
+
+    public void PlayRandomPinSetSound()
+    {
+        if (audioSource != null && pinSetSounds.Length > 0)
+        {
+            int randomIndex = Random.Range(0, pinSetSounds.Length);
+            audioSource.PlayOneShot(pinSetSounds[randomIndex]);
+        }
+    }
+
+    public void PlayPinMoveSound()
+    {
+        if (audioSource != null && pinMoveSound != null) audioSource.PlayOneShot(pinMoveSound);
+    }
+
+    public void PlayBarPassSound()
+    {
+        if (audioSource != null && barPassSound != null) audioSource.PlayOneShot(barPassSound);
+    }
+
+    public void PlayBarFailSound()
+    {
+        if (audioSource != null && barFailSound != null) audioSource.PlayOneShot(barFailSound);  
+    }
+
+    public void Phase1PinStartMoveSound()
+    {
+        if (loopingAudioSource != null && pinMoveSound != null && !loopingAudioSource.isPlaying)
+        {
+            loopingAudioSource.clip = pinMoveSound;
+            loopingAudioSource.loop = true;
+            loopingAudioSource.Play();
+        }
+    }
+
+    public void Phase1PinStopMoveSound()
+    {
+        if (loopingAudioSource != null && loopingAudioSource.isPlaying)
+        {
+            loopingAudioSource.Stop();
+        }
+    }
+    
 }

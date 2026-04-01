@@ -79,6 +79,7 @@ public class Phase1PinInteractable : MonoBehaviour, IGazeTarget
             float newY = Mathf.MoveTowards(currentpos.y, StartingYPosition, moveSpeed * Time.deltaTime);
             pinGraphic.anchoredPosition = new Vector2(currentpos.x, newY);
         }
+        
     }
 
     private void LockInPin()
@@ -89,7 +90,7 @@ public class Phase1PinInteractable : MonoBehaviour, IGazeTarget
 
         int displayNumber = LockPickManager.Instance.lockPins[pinIndex].assignedNumber;
         
-        Debug.Log(displayNumber);
+        //Debug.Log(displayNumber);
 
         // get the number for the lock pick manager and set it to be visible
         if (numberText != null)
@@ -98,8 +99,6 @@ public class Phase1PinInteractable : MonoBehaviour, IGazeTarget
             numberText.gameObject.SetActive(true);   
         }
 
-        
-        // Play audio click here
         
         LockPickManager.Instance.ReportPinSet(pinIndex);
     }
