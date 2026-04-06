@@ -61,6 +61,7 @@ public class Phase3Rotator : MonoBehaviour, IGazeTarget
         if (angleDifference < angleTolerance)
         {
             isUnlocked = true;
+            LockPickManager.Instance.PlayRandomPinSetSound();
             LockPickManager.Instance.CompleteGame();
         }
             
